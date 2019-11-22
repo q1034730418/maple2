@@ -3,11 +3,20 @@
 //=============================================================================
 
 /*:
- * @plugindesc (v1.1) Sistema de distância de eventos.
- * @author Moghunter
+ * @plugindesc (v1.1)[v1.1]  物体 - 远距离触发事件
+ * @author Moghunter （Drill_up翻译）
  *
- * @param Self Switch Key
- * @desc Definição da Letra da SelfSwitch
+ * @param 打开的独立开关
+ * @type select
+ * @option A
+ * @value A
+ * @option B
+ * @value B
+ * @option C
+ * @value C
+ * @option D
+ * @value D
+ * @desc 远距离触发事件后，会打开指定的独立开关。
  * @default D
  * 
  * @help  
@@ -16,20 +25,26 @@
  * By Moghunter 
  * https://atelierrgss.wordpress.com/
  * =============================================================================
- * Sistema de distância de eventos.
- * Dependendo da distância entre o jogador e o evento a página pré determinada 
- * do evento poderá ser ativada ou não.
- * =============================================================================
- * Para definir a distância do sensor do evento coloque este comentário no 
- * evento.
+ * 玩家进入了NPC指定的距离范围，会立即打开独立开关，形成触发事件的效果。
  *
- * event sensor : X
+ * -----------------------------------------------------------------------------
+ * ----激活条件
+ * 在指定的事件中，添加注释，在注释中填入以下指令：
+ * （注释中的冒号后面有一个空格，前面没有。）
+ * 
+ * event sensor: X
+ * 
+ * 参数X：事件与玩家的距离，最小为1，单位图格
+ *        1的距离，表示玩家进入npc加号的范围内会立即打开独立开关：
+ *           x
+ *         x x x
+ *           x
+ *        以此类推。
  *
- * =============================================================================
- * HISTÓRICO
- * =============================================================================
- * (v1.1) - Mudança da noteTag para padronizar a forma de comandos.
- *
+ * -----------------------------------------------------------------------------
+ * ----关于Drill_up优化：
+ * [v1.1]
+ * 1.0和1.1出现了两种注释写法，这里设置成两种写法都有效。
  */
 
 //=============================================================================
@@ -40,7 +55,7 @@
 　　var Moghunter = Moghunter || {}; 
 
   　Moghunter.parameters = PluginManager.parameters('MOG_EventSensor');
-    Moghunter.sensor_range_key = String(Moghunter.parameters['Self Switch Key'] || "D");
+    Moghunter.sensor_range_key = String(Moghunter.parameters['打开的独立开关'] || "D");
 
 //=============================================================================
 // ** Character Base
@@ -65,7 +80,7 @@ Game_CharacterBase.prototype.initMembers = function() {
 var _alias_mog_evensensor_schar_initialize = Sprite_Character.prototype.initialize;
 Sprite_Character.prototype.initialize = function(character) {
     _alias_mog_evensensor_schar_initialize.call(this,character);
-	if (this._character && this._character._eventId) {this._character.check_event_sensor()};
+	if (character && character._eventId && character instanceof Game_Event) {character.check_event_sensor()};
 };
 
 //=============================================================================
@@ -101,7 +116,13 @@ Game_Event.prototype.setupPage = function() {
 //==============================
 Game_Event.prototype.check_event_sensor = function() {
 	if (!this._erased && this.page()) {this.list().forEach(function(l) {
-	       if (l.code === 108) {var comment = l.parameters[0].split(' : ');
+	       if (l.code === 108) {
+			   var comment = l.parameters[0].split(': ');
+			   if (comment[0].toLowerCase() == "event sensor"){
+                 this._sensor_range = [true,Number(Math.abs(comment[1]))];
+				 this._need_clear_sensor = false;			  
+			   };
+			   comment = l.parameters[0].split(' : ');
 			   if (comment[0].toLowerCase() == "event sensor"){
                  this._sensor_range = [true,Number(Math.abs(comment[1]))];
 				 this._need_clear_sensor = false;			  

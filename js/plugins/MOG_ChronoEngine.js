@@ -1650,16 +1650,16 @@ Game_Map.prototype.addToolsOnMap = function(tool_id) {
 };
 
 //==============================
-// * clear Tools On Map
+// * clear Tools On Map revise by Fanzi
 //==============================
-Game_Map.prototype.clearToolsOnMap = function() {
+Game_Map.prototype.clearToolsOnMap = function() {	
     for (var i = 0; i < this._events.length; i++) {
-        var ev = this._events[i];
-        if (ev && ev._tool.enabled) {
-            ev._tool.duration = 1;
-            ev._tool.removeSprite = true;
-        };
-    };
+		var ev = this._events[i];
+		if (ev && ev._tool && ev._tool.enabled) {			
+			ev._tool.duration = 1;
+			ev._tool.removeSprite = true;
+		};
+	};
 };
 
 //==============================
@@ -1683,18 +1683,18 @@ Game_Map.prototype.clearBattlersOnMap = function() {
 };
 
 //==============================
-// * remove Tool Events
+// * remove Tool Events revise by Fanzi
 //==============================
 Game_Map.prototype.removeToolEvents = function() {
     for (var i = 0; i < this._events.length; i++) {
-        var ev = this._events[i];
-        if (ev && ev._tool.removeSprite) {
-            this.removeRasEffectEvents(ev)
-            ev._tool.removeSprite = false;
-            this._events.splice(i, 1);
-            this.removeToolsOnMap(ev._tool.id);
-        };
-    };
+		var ev = this._events[i];
+		if (ev && ev._tool && ev._tool.removeSprite) {
+	        this.removeRasEffectEvents(ev)
+		    ev._tool.removeSprite = false;
+		    this._events.splice(i,1);
+		    this.removeToolsOnMap(ev._tool.id);
+		};
+	};
 };
 
 //==============================
@@ -1806,19 +1806,19 @@ Game_Map.prototype.tool = function(id) {
 };
 
 //==============================
-// * tool Event On Map
+// * tool Event On Map revise by Fanzi
 //==============================
 Game_Map.prototype.toolEventOnMap = function(toolID) {
-    var event = null;
+	var event = null;	 
     for (var i = 0; i < this._events.length; i++) {
-        var ev = this._events[i];
-        if (ev && ev._tool.enabled && ev._tool.id === toolID) {
-            event = ev;
-        };
-    };
-    return event;
-};
-
+		var ev = this._events[i];
+		if (ev && ev._tool && ev._tool.enabled && ev._tool.id === toolID) {
+			event = ev;
+		};
+	};
+	return event;
+};  
+  
 //==============================
 // * Players
 //==============================
@@ -1850,32 +1850,32 @@ Game_Map.prototype.allCharacters = function() {
 };
 
 //==============================
-// * Targets on Screen
+// * Targets on Screen revise by Fanzi
 //==============================
-Game_Map.prototype.targetsOnScreen = function() {
-    this._battlersOnScreen = [];
-    this._enemiesOnScreen = [];
-    this._actorsOnScreen = [];
-    for (var i = 0; i < this._events.length; i++) {
-        var character = this._events[i];
-        if (character) {
-            character._user.onScreen = false;
-            if (this.isBattlerOnScreen(character, true, false)) {
-                this._enemiesOnScreen.push(character);
-                this._battlersOnScreen.push(character);
-                character._user.onScreen = true;
-            };
-        };
-    };
-    for (var i = 0; i < this.players().length; i++) {
-        var character = this.players()[i];
-        character._user.onScreen = false;
-        if (character && this.isBattlerOnScreen(character, false, true)) {
-            this._actorsOnScreen.push(character);
-            this._battlersOnScreen.push(character);
-            character._user.onScreen = true;
-        };
-    };
+Game_Map.prototype.targetsOnScreen = function() {	 
+	 this._battlersOnScreen = [];
+	 this._enemiesOnScreen = [];
+	 this._actorsOnScreen = [];
+     for (var i = 0; i < this._events.length; i++) {
+		 var character = this._events[i];
+		 if (character && character instanceof Game_Event) {
+			 character._user.onScreen = false;
+			 if (this.isBattlerOnScreen(character,true,false)) {
+				 this._enemiesOnScreen.push(character);
+				 this._battlersOnScreen.push(character);
+				 character._user.onScreen = true;
+			 };
+		 };
+	};	 
+	for (var i = 0; i < this.players().length; i++) {
+		 var character = this.players()[i];
+		 character._user.onScreen = false;
+		 if (character && this.isBattlerOnScreen(character,false,true)) {
+			 this._actorsOnScreen.push(character);
+			 this._battlersOnScreen.push(character);
+			 character._user.onScreen = true;
+		 };			
+	};
 };
 
 //==============================
@@ -3043,23 +3043,23 @@ Game_CharacterBase.prototype.shield = function(value) {
     this.battler()._ras.invunerable = value;
 };
 
-//==============================
-// * clear  PickUp Ras
+ //==============================
+// * clear  PickUp Ras revise by Fanzi
 //==============================
 Game_CharacterBase.prototype.clearPickUpRas = function() {
-    if (Imported.MOG_PickupThrow && this._pickup.enabled) {
-        $gameMap.events().forEach(function(event) {
-            if (event._throw.enabled) {
-                event._throw.range = 1;
-                this.throwEvent(event)
-                event.clearThrow(1);
-            };
-
-        }, this);
-        this._pickup.enabled = false;
-        this._pickup.wait = 15;
-        if (this._pickup.pose) { this._characterName = this._pickup.originalName };
-    };
+   if (Imported.MOG_PickupThrow && this._pickup.enabled) {
+		$gameMap.events().forEach(function(event) {
+				 if (event._throw && event._throw.enabled) {
+					 event._throw.range = 1; 
+					 this.throwEvent(event)			
+					 event.clearThrow(1);
+				 };
+				 
+	   }, this);	   
+	   this._pickup.enabled = false;
+	   this._pickup.wait = 15;
+	   if (this._pickup.pose) {this._characterName = this._pickup.originalName};	   
+   };
 };
 
 //=============================================================================
@@ -3107,14 +3107,14 @@ Game_Player.prototype.initMembers = function() {
 };
 
 //==============================
-// * Start Map Event
+// * Start Map Event revise by Fanzi
 //==============================
 Game_Player.prototype.startMapEvent = function(x, y, triggers, normal) {
-    if ($gameSystem.isChronoMode()) { return };
+	if ($gameSystem.isChronoMode()) {return};
     if (!$gameTemp._chaPosesEVRunning) {
         $gameMap.eventsXy(x, y).forEach(function(event) {
-            if (event.canStartMapEvent(triggers, normal)) {
-                this._toolEventStart = true;
+		    if (event instanceof Game_Event && event.canStartMapEvent(triggers,normal)) {
+				this._toolEventStart = true;
                 event.start();
             };
         });
@@ -6761,7 +6761,7 @@ ToolEvent.prototype.inScope = function(user, target) {
 };
 
 //==============================
-// * Execute Damage
+// * Execute Damage  攻击音效
 //==============================
 ToolEvent.prototype.executeDamage = function(target) {
     var subject = this.user().battler();
@@ -6785,7 +6785,7 @@ ToolEvent.prototype.executeDamage = function(target) {
 };
 
 //==============================
-// * Dead Effect For Actor
+// * Dead Effect For Actor  死亡动作 
 //==============================
 ToolEvent.prototype.deadEffectActor = function(char, battler) {
     battler._ras.charge.time = 0;
@@ -11394,12 +11394,12 @@ Spriteset_Map.prototype.updateToolSprite = function() {
 };
 
 //==============================
-// * Add Tool Sprite
+// * Add Tool Sprite revise by Fanzi
 //==============================
 Spriteset_Map.prototype.addToolSprite = function() {
-    $gameSystem._eventDataToolRequestAddSprite = false;
+	$gameSystem._eventDataToolRequestAddSprite = false;
     $gameMap.events().forEach(function(event) {
-        if (event._tool.addSprite) {
+		if (event._tool && event._tool.addSprite) {
             this._characterSprites.push(new Sprite_Character(event));
             var index = this._characterSprites.length - 1;
             if (this._characterSprites[index]) {
